@@ -13,7 +13,7 @@ const Header = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const apiKey = 'cpbpsl1r01qqbq2adk20cpbpsl1r01qqbq2adk2g'; // Ваш API ключ
+        const apiKey = 'cpbpsl1r01qqbq2adk20cpbpsl1r01qqbq2adk2g';
         const symbol = 'AAPL';
         const response = await axios.get(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`);
         const data = response.data;

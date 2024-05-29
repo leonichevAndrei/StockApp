@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import axios from 'axios';
 
-// OverviewChart component that displays stock data over a selected timeframe
+// OverviewChart component that displays current stock data
 const OverviewChart = () => {
   const [data, setData] = useState([]);
   const [timeframe, setTimeframe] = useState('1d');
@@ -10,32 +10,29 @@ const OverviewChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const apiKey = 'cpbpsl1r01qqbq2adk20cpbpsl1r01qqbq2adk2g'; // Ваш API ключ
+        const apiKey = 'cpbpsl1r01qqbq2adk20cpbpsl1r01qqbq2adk2g';
         const symbol = 'AAPL';
-        let resolution = '1';
+        
+        const response = await axios.get(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`);
+        const quoteData = response.data;
 
-        if (timeframe === '1d') {
-          resolution = '1';
-        } else if (timeframe === '1w') {
-          resolution = '5';
-        } else if (timeframe === '1m') {
-          resolution = '60';
-        }
+        const currentTime = new Date().toLocaleString();
+        const newData = {
+          date: currentTime,
+          price: quoteData.c
+        };
 
-        const response = await axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=${resolution}&from=1615298999&to=1615302599&token=${apiKey}`);
-        const data = response.data;
-
-        const chartData = data.t.map((timestamp, index) => ({
-          date: new Date(timestamp * 1000).toLocaleString(),
-          price: data.c[index]
-        }));
-
-        setData(chartData);
+        setData(prevData => [...prevData, newData]);
       } catch (error) {
-        console.error('Error fetching chart data:', error);
+        console.error('Error fetching stock data:', error);
       }
     };
-    fetchData();
+
+    // Fetch data every minute
+    const intervalId = setInterval(fetchData, 60000);
+    fetchData(); // Initial fetch
+
+    return () => clearInterval(intervalId); // Clear interval on component unmount
   }, [timeframe]);
 
   return (
