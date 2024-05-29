@@ -10,23 +10,24 @@ const OverviewChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const apiKey = 'M06Q1IOY9CQ3NU8M'; // Ваш API ключ
-        let interval = '5min';
-        
+        const apiKey = 'cpbpsl1r01qqbq2adk20cpbpsl1r01qqbq2adk2g'; // Ваш API ключ
+        const symbol = 'AAPL';
+        let resolution = '1';
+
         if (timeframe === '1d') {
-          interval = '5min';
+          resolution = '1';
         } else if (timeframe === '1w') {
-          interval = '30min';
+          resolution = '5';
         } else if (timeframe === '1m') {
-          interval = '60min';
+          resolution = '60';
         }
 
-        const response = await axios.get(`https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=AAPL&interval=${interval}&apikey=${apiKey}`);
-        const data = response.data['Time Series (5min)'];
+        const response = await axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=${resolution}&from=1615298999&to=1615302599&token=${apiKey}`);
+        const data = response.data;
 
-        const chartData = Object.keys(data).map(key => ({
-          date: new Date(key).toLocaleString(),
-          price: data[key]['4. close']
+        const chartData = data.t.map((timestamp, index) => ({
+          date: new Date(timestamp * 1000).toLocaleString(),
+          price: data.c[index]
         }));
 
         setData(chartData);

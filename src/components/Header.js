@@ -13,16 +13,15 @@ const Header = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const apiKey = 'M06Q1IOY9CQ3NU8M'; // Ваш API ключ
-        const response = await axios.get(`https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=AAPL&interval=5min&apikey=${apiKey}`);
+        const apiKey = 'cpbpsl1r01qqbq2adk20cpbpsl1r01qqbq2adk2g'; // Ваш API ключ
+        const symbol = 'AAPL';
+        const response = await axios.get(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`);
         const data = response.data;
-        const lastRefreshed = data['Meta Data']['3. Last Refreshed'];
-        const lastData = data['Time Series (5min)'][lastRefreshed];
         setStockData({
-          currentPrice: lastData['4. close'],
-          priceChange: (lastData['4. close'] - lastData['1. open']).toFixed(2),
-          percentChange: (((lastData['4. close'] - lastData['1. open']) / lastData['1. open']) * 100).toFixed(2),
-          lastUpdated: new Date(lastRefreshed).toLocaleString()
+          currentPrice: data.c,
+          priceChange: data.d,
+          percentChange: data.dp,
+          lastUpdated: new Date().toLocaleString()
         });
       } catch (error) {
         console.error('Error fetching stock data:', error);
