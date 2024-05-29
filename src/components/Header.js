@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -13,14 +12,21 @@ const Header = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axios.get('https://test.fxempire.com/api/v1/en/stocks/chart/candles?Identifier=AAPL.XNAS&IdentifierType=Symbol&AdjustmentMethod=All&IncludeExtended=False&period=30&Precision=Minutes&StartTime=02/22/2023&EndTime=03/01/2023%2023:59&_fields=ChartBars.StartDate,ChartBars.High,ChartBars.Low,ChartBars.StartTime,ChartBars.Open,ChartBars.Close,ChartBars.Volume');
-      const data = response.data;
-      setStockData({
-        currentPrice: data.currentPrice,
-        priceChange: data.priceChange,
-        percentChange: data.percentChange,
-        lastUpdated: new Date().toLocaleString()
-      });
+      try {
+        const apiKey = 'M06Q1IOY9CQ3NU8M'; // Ваш API ключ
+        const response = await axios.get(`https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=AAPL&interval=5min&apikey=${apiKey}`);
+        const data = response.data;
+        const lastRefreshed = data['Meta Data']['3. Last Refreshed'];
+        const lastData = data['Time Series (5min)'][lastRefreshed];
+        setStockData({
+          currentPrice: lastData['4. close'],
+          priceChange: (lastData['4. close'] - lastData['1. open']).toFixed(2),
+          percentChange: (((lastData['4. close'] - lastData['1. open']) / lastData['1. open']) * 100).toFixed(2),
+          lastUpdated: new Date(lastRefreshed).toLocaleString()
+        });
+      } catch (error) {
+        console.error('Error fetching stock data:', error);
+      }
     };
     fetchData();
   }, []);
@@ -30,7 +36,7 @@ const Header = () => {
       <h1>Apple Inc. (AAPL)</h1>
       <p>Current Price: {stockData.currentPrice}</p>
       <p>Price Change: {stockData.priceChange}</p>
-      <p>Percent Change: {stockData.percentChange}</p>
+      <p>Percent Change: {stockData.percentChange}%</p>
       <p>Last Updated: {stockData.lastUpdated}</p>
     </header>
   );
