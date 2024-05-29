@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { HeaderContainer, Title, StockInfo } from '../styles/HeaderStyles';
 
-// Header component that displays static stock data
 const Header = () => {
   const [stockData, setStockData] = useState({
     currentPrice: '',
@@ -31,13 +31,13 @@ const Header = () => {
   }, []);
 
   return (
-    <header>
-      <h1>Apple Inc. (AAPL)</h1>
-      <p>Current Price: {stockData.currentPrice}</p>
-      <p>Price Change: {stockData.priceChange}</p>
-      <p>Percent Change: {stockData.percentChange}%</p>
-      <p>Last Updated: {stockData.lastUpdated}</p>
-    </header>
+    <HeaderContainer>
+      <Title>Apple Inc. (AAPL)</Title>
+      <StockInfo>Current Price: {stockData.currentPrice}</StockInfo>
+      <StockInfo>Price Change: {stockData.priceChange}</StockInfo>
+      <StockInfo>Percent Change: {stockData.percentChange}%</StockInfo>
+      <StockInfo>Last Updated: {stockData.lastUpdated}</StockInfo>
+    </HeaderContainer>
   );
 };
 

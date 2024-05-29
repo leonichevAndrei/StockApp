@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import axios from 'axios';
 
-// OverviewChart component that displays current stock data
+// OverviewChart component that displays current stock data:
 const OverviewChart = () => {
   const [data, setData] = useState([]);
   const [timeframe, setTimeframe] = useState('1d');
@@ -29,7 +29,7 @@ const OverviewChart = () => {
     };
 
     // Fetch data every minute
-    const intervalId = setInterval(fetchData, 60000);
+    const intervalId = setInterval(fetchData, 60 * 1000);
     fetchData(); // Initial fetch
 
     return () => clearInterval(intervalId); // Clear interval on component unmount
