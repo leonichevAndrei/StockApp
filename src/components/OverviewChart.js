@@ -1,7 +1,8 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import axios from 'axios';
+import { fetchData, getAllDates } from "../utills/common.utills.js";
+import { SelectTimeFrame, OptTimeFrame } from '../styles/OverviewChartStyles';
+
 
 // OverviewChart component that displays current stock data
 const OverviewChart = () => {
@@ -9,55 +10,44 @@ const OverviewChart = () => {
   const [timeframe, setTimeframe] = useState('1d');
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const apiKey = 'cpbpsl1r01qqbq2adk20cpbpsl1r01qqbq2adk2g';
-        const symbol = 'AAPL';
-        
-        const response = await axios.get(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`);
-        const quoteData = response.data;
+    const dates = getAllDates();
+    const period = 60;
+    const precision = 'Minutes';
+    let startTime;
+    switch(timeframe) {
+      case "1d": startTime = dates.yesterdayFormatted; break;
+      case "1w": startTime = dates.lastWeekFormatted; break;
+      case "1m": startTime = dates.lastMonthFormatted; break;
+      default: startTime = "1d";
+    };
+    const endTime = dates.todayLastMinuteFormatted;
+    const updateInterval = 60 * 1000;
 
-        const currentTime = new Date().toLocaleString();
-        const newData = {
-          date: currentTime,
-          price: quoteData.c
-        };
-
-        setData(prevData => [...prevData, newData]);
-      } catch (error) {
-        console.error('Error fetching stock data:', error);
-      }
+    // Function for updating stock data:
+    const updateData = () => {
+      fetchData(period, precision, startTime, endTime).then(result => {
+        setData(result.data.map(elm => {
+          return {
+            date: elm.Date,
+            price: elm.Close
+          }
+        }));
+      });
     };
 
-    // Fetch data every minute
-    const intervalId = setInterval(fetchData, 60 * 1000);
-    fetchData(); // Initial fetch
-
+    // Update stock data every "updateInterval" milliseconds:
+    const intervalId = setInterval(updateData, updateInterval);
+    updateData(); // Initial fetch
     return () => clearInterval(intervalId); // Clear interval on component unmount
   }, [timeframe]);
 
-  // const data = [
-  //   {
-  //     date: 'Day 1',
-  //     price: 2400
-  //   },
-  //   {
-  //     date: 'Day 2',
-  //     price: 1398
-  //   },
-  //   {
-  //     date: 'Day 3',
-  //     price: 9800
-  //   }
-  // ];
-
   return (
     <div>
-      <select onChange={(e) => setTimeframe(e.target.value)}>
-        <option value="1d">1 Day</option>
-        <option value="1w">1 Week</option>
-        <option value="1m">1 Month</option>
-      </select>
+      <SelectTimeFrame onChange={(e) => setTimeframe(e.target.value)}>
+        <OptTimeFrame value="1d">1 Day</OptTimeFrame>
+        <OptTimeFrame value="1w">1 Week</OptTimeFrame>
+        <OptTimeFrame value="1m">1 Month</OptTimeFrame>
+      </SelectTimeFrame>
 
       <LineChart
         width={500}

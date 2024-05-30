@@ -4,6 +4,7 @@ export const TabContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 15px;
 `;
 
 export const TabButton = styled.button`

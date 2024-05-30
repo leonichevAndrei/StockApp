@@ -11,7 +11,7 @@ const Header = () => {
   });
 
   useEffect(() => {
-    const dates = getAllDates()
+    const dates = getAllDates();
     const period = 60;
     const precision = 'Minutes';
     const startTime = dates.yesterdayFormatted;
