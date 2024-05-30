@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import axios from 'axios';
 
-// OverviewChart component that displays current stock data:
+// OverviewChart component that displays current stock data
 const OverviewChart = () => {
   const [data, setData] = useState([]);
   const [timeframe, setTimeframe] = useState('1d');
@@ -35,6 +36,21 @@ const OverviewChart = () => {
     return () => clearInterval(intervalId); // Clear interval on component unmount
   }, [timeframe]);
 
+  // const data = [
+  //   {
+  //     date: 'Day 1',
+  //     price: 2400
+  //   },
+  //   {
+  //     date: 'Day 2',
+  //     price: 1398
+  //   },
+  //   {
+  //     date: 'Day 3',
+  //     price: 9800
+  //   }
+  // ];
+
   return (
     <div>
       <select onChange={(e) => setTimeframe(e.target.value)}>
@@ -42,13 +58,24 @@ const OverviewChart = () => {
         <option value="1w">1 Week</option>
         <option value="1m">1 Month</option>
       </select>
-      <LineChart width={500} height={300} data={data}>
+
+      <LineChart
+        width={500}
+        height={300}
+        data={data}
+        margin={{
+          top: 5,
+          right: 30,
+          left: 20,
+          bottom: 5,
+        }}
+      >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="date" />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Line type="monotone" dataKey="price" stroke="#8884d8" activeDot={{ r: 8 }} />
+        <Line dataKey="price" type="monotone" stroke="#8884d8" activeDot={{ r: 8 }} />
       </LineChart>
     </div>
   );

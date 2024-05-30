@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { HeaderContainer, Title, StockInfo } from '../styles/HeaderStyles';
+import { fetchData, getAllDates, getStockData } from "../utills/common.utills.js";
 
 const Header = () => {
   const [stockData, setStockData] = useState({
@@ -11,23 +11,24 @@ const Header = () => {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const apiKey = 'cpbpsl1r01qqbq2adk20cpbpsl1r01qqbq2adk2g';
-        const symbol = 'AAPL';
-        const response = await axios.get(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`);
-        const data = response.data;
-        setStockData({
-          currentPrice: data.c,
-          priceChange: data.d,
-          percentChange: data.dp,
-          lastUpdated: new Date().toLocaleString()
-        });
-      } catch (error) {
-        console.error('Error fetching stock data:', error);
-      }
-    };
-    fetchData();
+    const dates = getAllDates()
+    const period = 60;
+    const precision = 'Minutes';
+    const startTime = dates.yesterdayFormatted;
+    const endTime = dates.todayLastMinuteFormatted;
+    const updateInterval = 30 * 60 * 1000;
+
+    // Function for updating stock data:
+    const updateStockData = () => {
+      fetchData(period, precision, startTime, endTime).then(result => {
+        setStockData(getStockData(result.data));
+      });
+    }
+    // Update stock data every "updateInterval" milliseconds:
+    const intervalId = setInterval(updateStockData, updateInterval);
+    updateStockData(); // Initial update
+
+    return () => clearInterval(intervalId); // Clear interval on component unmount
   }, []);
 
   return (

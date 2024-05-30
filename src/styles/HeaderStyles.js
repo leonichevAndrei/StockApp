@@ -12,6 +12,8 @@ export const HeaderContainer = styled.header`
 export const Title = styled.h1`
   margin: 0;
   font-size: 1.5em;
+  padding-bottom: 10px;
+  text-decoration: underline;
 `;
 
 export const StockInfo = styled.p`
